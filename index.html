@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftSites | Custom Web Development</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Theme */
+        :root {
+            --primary-black: #0a0a0a;
+            --dark-black: #121212;
+            --light-black: #1e1e1e;
+            --primary-purple: #8a2be2;
+            --light-purple: #a855f7;
+            --lighter-purple: #c084fc;
+            --text-light: #f5f5f5;
+            --text-gray: #b3b3b3;
+            --shadow: 0 10px 30px rgba(138, 43, 226, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-black);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        
+        .loading-logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-purple);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .loading-logo::after {
+            content: "Sites";
+            color: var(--text-light);
+        }
+        
+        .loading-animation {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--light-black);
+            border-top: 5px solid var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            letter-spacing: 2px;
+        }
+        
+        /* Page Container */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 80px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: var(--primary-purple);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 2rem;
+        }
+        
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary-purple);
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-purple);
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--light-purple);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 6rem 5% 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--dark-black) 0%, var(--primary-black) 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero h1 span {
+            color: var(--primary-purple);
+            position: relative;
+        }
+        
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: rgba(138, 43, 226, 0.3);
+            z-index: -1;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        /* Services Section */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary-purple);
+        }
+        
+        .services {
+            padding: 5rem 5%;
+            background-color: var(--dark-black);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .service-card {
+            background-color: var(--light-black);
+            border-radius: 10px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(138, 43, 226, 0.1);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-purple);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            color: var(--primary-purple);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Portfolio Section */
+        .portfolio {
+            padding: 5rem 5%;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .portfolio-item {
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            height: 300px;
+            cursor: pointer;
+        }
+        
+        .portfolio-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .portfolio-item:hover .portfolio-img {
+            transform: scale(1.05);
+        }
+        
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(10, 10, 10, 0.9));
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* About Section */
+        .about {
+            padding: 5rem 5%;
+            background-color: var(--dark-black);
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+        
+        .about-img {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .about-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .about-content {
+            flex: 1;
+        }
+        
+        /* Contact Section */
+        .contact {
+            padding: 5rem 5%;
+        }
+        
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .contact-form {
+            background-color: var(--light-black);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--dark-black);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 5px;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        
+        /* Custom Website Builder Page */
+        .builder {
+            padding: 5rem 5%;
+        }
+        
+        .builder-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+        
+        .builder-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .step {
+            background-color: var(--light-black);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-color: var(--primary-purple);
+            transform: translateY(-5px);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-purple);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .builder-form {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--light-black);
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .website-features {
+            margin-top: 2rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .feature-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-black);
+            padding: 4rem 5% 2rem;
+            margin-top: 5rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links h3,
+        .footer-contact h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links ul li a {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links ul li a:hover {
+            color: var(--primary-purple);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .about {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            /* if you later add a mobile nav back, styles can go here */
+            
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 4rem 5% 3rem;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .builder-form {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-logo">Swift</div>
+        <div class="loading-animation"></div>
+        <div class="loading-text">LOADING</div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <a href="#home" class="logo">Swift<span>Sites</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav>
+            <ul>
+                <li><a href="#home" class="nav-link active" data-page="home">Home</a></li>
+                <li><a href="#services" class="nav-link" data-page="services">Services</a></li>
+                <li><a href="#portfolio" class="nav-link" data-page="portfolio">Portfolio</a></li>
+                <li><a href="#about" class="nav-link" data-page="about">About</a></li>
+                <li><a href="#contact" class="nav-link" data-page="contact">Contact</a></li>
+                <li><a href="#builder" class="nav-link" data-page="builder">Build Your Site</a></li>
+            </ul>
+        </nav>
+        <div class="nav-buttons">
+            <a href="#contact" class="nav-btn">Get In Touch</a>
+        </div>
+    </header>
+    
+    <!-- (mobile-nav block removed) -->
+    
+    <!-- Pages -->
+    <!-- Home Page -->
+    <section id="home" class="page active">
+        <div class="hero">
+            <h1>Crafting Digital Experiences That <span>Convert &amp; Captivate</span></h1>
+            <p>At SwiftSites, we create custom web solutions that blend stunning design with powerful functionality. From sleek business websites to complex web applications, we deliver fast, responsive, and secure digital experiences.</p>
+            <div class="cta-buttons">
+                <a href="#portfolio" class="nav-btn">View Our Work</a>
+                <a href="#builder" class="nav-btn" style="background-color: transparent; border: 2px solid var(--primary-purple);">Build Your Site</a>
+            </div>
+        </div>
+        
+        <div class="services">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Custom Web Development</h3>
+                    <p>Tailored websites and web applications built from scratch to meet your specific business needs and objectives.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>UI/UX Design</h3>
+                    <p>User-centered design that creates intuitive, engaging experiences that keep visitors coming back.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Websites that look and function perfectly on all devices, from desktop to smartphone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Page -->
+    <section id="services" class="page">
+        <div class="hero">
+            <h1>Our <span>Development Services</span></h1>
+            <p>We offer a comprehensive suite of web development services designed to elevate your digital presence and drive business growth.</p>
+        </div>
+        
+        <div class="services">
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>E-Commerce Solutions</h3>
+                    <p>Complete online store setup with secure payment gateways, inventory management, and customer analytics.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>Performance Optimization</h3>
+                    <p>Speed optimization to ensure fast loading times, better SEO rankings, and improved user experience.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Security &amp; Maintenance</h3>
+                    <p>Ongoing security monitoring, regular updates, and maintenance to keep your site secure and up-to-date.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>SEO &amp; Digital Marketing</h3>
+                    <p>Search engine optimization and digital marketing strategies to increase visibility and drive targeted traffic.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Round-the-clock technical support to ensure your website runs smoothly at all times.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Fast Deployment</h3>
+                    <p>Rapid development and deployment processes to get your site live quickly without compromising quality.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Portfolio Page -->
+    <section id="portfolio" class="page">
+        <div class="hero">
+            <h1>Our <span>Recent Projects</span></h1>
+            <p>Explore some of our recent work that showcases our expertise in creating stunning, functional websites across various industries.</p>
+        </div>
+        
+        <div class="portfolio">
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="E-commerce Website" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>Luxe Fashion Store</h3>
+                        <p>Full-featured e-commerce platform with custom design</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w-600&q=80" alt="Finance Dashboard" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>FinTech Dashboard</h3>
+                        <p>Interactive financial dashboard with real-time data</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1559028012-481c04fa702d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Restaurant Website" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>Bistro Modern Website</h3>
+                        <p>Restaurant website with online reservations and menu</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Health &amp; Wellness" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>HealthTech Platform</h3>
+                        <p>Healthcare portal with appointment scheduling</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Travel Blog" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>Adventure Travel Blog</h3>
+                        <p>Travel blog with interactive maps and gallery</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Corporate Website" class="portfolio-img">
+                    <div class="portfolio-overlay">
+                        <h3>Corporate Business Site</h3>
+                        <p>Professional corporate website with investor portal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Page -->
+    <section id="about" class="page">
+        <div class="hero">
+            <h1>About <span>SwiftSites</span></h1>
+            <p>Learn about our mission, values, and the team behind the exceptional web solutions we create for our clients.</p>
+        </div>
+        
+        <div class="about">
+            <div class="about-img">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Our Team">
+            </div>
+            <div class="about-content">
+                <h2 class="section-title">Who We Are</h2>
+                <p>SwiftSites was founded with a simple mission: to deliver exceptional web development services with speed, precision, and creativity. Our name reflects our commitment to swift delivery without compromising quality.</p>
+                <p>We believe that every business deserves a digital presence that not only looks stunning but also performs flawlessly. Our team of developers, designers, and strategists work collaboratively to create websites that drive results.</p>
+                <p>With years of experience across various industries, we've honed our skills in modern web technologies, responsive design, and user experience optimization. We stay at the forefront of web development trends to ensure our clients receive cutting-edge solutions.</p>
+                <p>Our client-centric approach means we work closely with you throughout the entire process, from initial concept to final deployment and beyond.</p>
+                <a href="#contact" class="nav-btn" style="margin-top: 2rem;">Work With Us</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Page -->
+    <section id="contact" class="page">
+        <div class="hero">
+            <h1>Get In <span>Touch</span></h1>
+            <p>Ready to start your next web project? Contact us today for a free consultation and quote.</p>
+        </div>
+        
+        <div class="contact">
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h3>Phone</h3>
+                            <p>610-737-1247</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3>Email</h3>
+                            <p>naseemsphatax@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h3>Location</h3>
+                            <p>Based in Lawranceville, GA<br>Serving clients nationwide</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3>Business Hours</h3>
+                            <p>Monday - Friday: 9am - 6pm EST<br>Saturday: 10am - 2pm EST</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="nav-btn" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Custom Website Builder Page -->
+    <section id="builder" class="page">
+        <div class="hero">
+            <h1>Build Your <span>Custom Website</span></h1>
+            <p>Use our simple builder to configure your dream website. Tell us about your project and we'll create a custom quote just for you.</p>
+        </div>
+        
+        <div class="builder">
+            <div class="builder-intro">
+                <h2 class="section-title">How It Works</h2>
+                <p>Building your custom website with SwiftSites is simple. Just follow these three steps:</p>
+            </div>
+            
+            <div class="builder-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Configure Your Site</h3>
+                    <p>Tell us about your website needs using the form below. Select the features and functionality you require.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Receive Custom Quote</h3>
+                    <p>We'll analyze your requirements and send you a detailed proposal with timeline and pricing.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Launch Your Site</h3>
+                    <p>Once approved, our team builds and launches your website, followed by ongoing support.</p>
+                </div>
+            </div>
+            
+            <div class="builder-form">
+                <h2 class="section-title">Website Configuration</h2>
+                <form id="websiteBuilderForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" placeholder="Company Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Website Purpose (e.g., Business, E-commerce, Portfolio)">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pages">Number of Pages Needed:</label>
+                        <select id="pages" style="width: 100%; padding: 1rem; background-color: var(--dark-black); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 5px; color: var(--text-light); font-size: 1rem;">
+                            <option value="1-5">1-5 Pages</option>
+                            <option value="6-10">6-10 Pages</option>
+                            <option value="11-20">11-20 Pages</option>
+                            <option value="20+">20+ Pages</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Timeline:</label>
+                        <select style="width: 100%; padding: 1rem; background-color: var(--dark-black); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 5px; color: var(--text-light); font-size: 1rem;">
+                            <option value="asap">As Soon As Possible</option>
+                            <option value="1-2">1-2 Months</option>
+                            <option value="3-4">3-4 Months</option>
+                            <option value="flexible">Flexible Timeline</option>
+                        </select>
+                    </div>
+                    
+                    <div class="website-features">
+                        <h3>Website Features Needed:</h3>
+                        <div class="features-grid">
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature1" checked>
+                                <label for="feature1">Responsive Design</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature2">
+                                <label for="feature2">E-commerce Functionality</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature3">
+                                <label for="feature3">User Login/Accounts</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature4">
+                                <label for="feature4">Blog/News Section</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature5">
+                                <label for="feature5">Contact Forms</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature6">
+                                <label for="feature6">Photo/Video Gallery</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature7">
+                                <label for="feature7">SEO Optimization</label>
+                            </div>
+                            <div class="feature-checkbox">
+                                <input type="checkbox" id="feature8">
+                                <label for="feature8">Social Media Integration</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget">Estimated Budget:</label>
+                        <select id="budget" style="width: 100%; padding: 1rem; background-color: var(--dark-black); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 5px; color: var(--text-light); font-size: 1rem;">
+                            <option value="1000-3000">$1,000 - $3,000</option>
+                            <option value="3000-5000">$3,000 - $5,000</option>
+                            <option value="5000-10000">$5,000 - $10,000</option>
+                            <option value="10000+">$10,000+</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea placeholder="Additional details about your project, specific features needed, or any questions you have..." rows="4"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="nav-btn" style="width: 100%; font-size: 1.1rem; padding: 1.2rem;">Submit Your Configuration &amp; Get Quote</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-logo">Swift<span>Sites</span></div>
+                <p>Custom web development solutions that blend innovative design with cutting-edge technology to help your business thrive online.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#builder">Build Your Site</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-phone" style="margin-right: 10px; color: var(--primary-purple);"></i> 610-737-1247</p>
+                <p><i class="fas fa-envelope" style="margin-right: 10px; color: var(--primary-purple);"></i> naseemsphatax@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt" style="margin-right: 10px; color: var(--primary-purple);"></i> Lawranceville, GA</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 SwiftSites. All rights reserved. | Custom Web Development Services</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Wait for page to load
+        window.addEventListener('load', function() {
+            // Hide loading screen
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 800);
+            
+            // Initialize page
+            initPage();
+        });
+        
+        function initPage() {
+            // Navigation functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileNav = document.getElementById('mobile-nav'); // will be null now
+            
+            // Set active page based on hash or default to home
+            let currentPage = window.location.hash ? window.location.hash.substring(1) : 'home';
+            
+            // Show the current page
+            showPage(currentPage);
+            
+            // Navigation link clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active nav link
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected page
+                    showPage(pageId);
+                    
+                    // Update URL hash
+                    window.location.hash = pageId;
+                    
+                    // Close mobile menu if it existed
+                    if (mobileNav) {
+                        mobileNav.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Mobile menu toggle (guarded)
+            if (mobileMenuToggle && mobileNav) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileNav.classList.toggle('active');
+                    this.querySelector('i').classList.toggle('fa-bars');
+                    this.querySelector('i').classList.toggle('fa-times');
+                });
+            }
+            
+            // Form submissions
+            const contactForm = document.getElementById('contactForm');
+            const builderForm = document.getElementById('websiteBuilderForm');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Thank you for your message! We will get back to you within 24 hours.');
+                    this.reset();
+                });
+            }
+            
+            if (builderForm) {
+                builderForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Thank you for your website configuration! We will send you a custom quote within 24 hours.');
+                    this.reset();
+                });
+            }
+            
+            // Handle hash changes
+            window.addEventListener('hashchange', function() {
+                const pageId = window.location.hash.substring(1) || 'home';
+                showPage(pageId);
+                
+                // Update active nav link
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-page') === pageId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Show specific page function
+            function showPage(pageId) {
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show selected page
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    
+                    // Scroll to top of page
+                    window.scrollTo(0, 0);
+                }
+            }
+            
+            // Add animation to service cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe service cards and portfolio items
+            document.querySelectorAll('.service-card, .portfolio-item, .step').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        }
+    </script>
+</body>
+</html>
